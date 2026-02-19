@@ -3,6 +3,7 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PulseButton } from "@/components/ui/PulseButton";
+import { SettingsProfile } from "@/components/settings/SettingsProfile";
 import { useUserStore } from "@/lib/store";
 import { useAudioSettings } from "@/hooks/useAudioSettings";
 import { Trash2, Volume2, VolumeX, Save, Activity } from "lucide-react";
@@ -32,6 +33,8 @@ export default function SettingsPage() {
             </header>
 
             <div className="space-y-6 max-w-2xl">
+                <SettingsProfile />
+
                 <GlassCard>
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
