@@ -12,6 +12,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { LogIn, User, Settings, LogOut, ChevronsUpDown } from "lucide-react"
+import Link from "next/link"
 
 export function UserProfile() {
     const { data: session, status } = useSession()
@@ -75,14 +76,18 @@ export function UserProfile() {
 
                 <DropdownMenuSeparator className="bg-white/10" />
 
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer group">
-                    <User className="w-4 h-4 mr-2 text-muted group-hover:text-primary transition-colors" />
-                    Profile
+                <DropdownMenuItem asChild>
+                    <Link href="/progress" className="w-full cursor-pointer focus:bg-white/10 focus:text-white group">
+                        <User className="w-4 h-4 mr-2 text-muted group-hover:text-primary transition-colors" />
+                        Profile
+                    </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer group">
-                    <Settings className="w-4 h-4 mr-2 text-muted group-hover:text-cyan-400 transition-colors" />
-                    Settings
+                <DropdownMenuItem asChild>
+                    <Link href="/settings" className="w-full cursor-pointer focus:bg-white/10 focus:text-white group">
+                        <Settings className="w-4 h-4 mr-2 text-muted group-hover:text-cyan-400 transition-colors" />
+                        Settings
+                    </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator className="bg-white/10" />
