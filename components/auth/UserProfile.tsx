@@ -3,17 +3,34 @@
 import { useSession, signIn, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { LogIn } from "lucide-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { LogIn, User, Settings, LogOut, ChevronsUpDown } from "lucide-react"
 
 export function UserProfile() {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
+
+    // Loading state can be a subtle pulse or just null
+    if (status === "loading") {
+        return <div className="h-10 w-full animate-pulse bg-white/5 rounded-lg" />
+    }
 
     if (!session?.user) {
         return (
-            <Button variant="outline" size="sm" onClick={() => signIn()}>
-                <LogIn className="w-4 h-4 mr-2" />
-                Sign In
+            <Button
+                onClick={() => signIn()}
+                className="w-full justify-start gap-3 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:text-white transition-all h-10 shadow-[0_0_15px_-5px_var(--color-primary)]"
+            >
+                <div className="p-1 bg-primary/20 rounded">
+                    <LogIn className="w-4 h-4" />
+                </div>
+                Connect Account
             </Button>
         )
     }
@@ -21,24 +38,60 @@ export function UserProfile() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
+                <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-left outline-none group">
+                    <Avatar className="h-9 w-9 border border-white/10 group-hover:border-primary/50 transition-colors">
                         <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
-                        <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            {session.user.name?.[0] || "U"}
+                        </AvatarFallback>
                     </Avatar>
-                </Button>
+
+                    <div className="flex-1 overflow-hidden">
+                        <p className="truncate text-sm font-bold text-white group-hover:text-primary transition-colors">
+                            {session.user.name}
+                        </p>
+                        <p className="truncate text-[10px] text-muted uppercase tracking-wider">
+                            {session.user.email}
+                        </p>
+                    </div>
+
+                    <ChevronsUpDown className="w-4 h-4 text-muted group-hover:text-white transition-colors" />
+                </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+
+            <DropdownMenuContent
+                className="w-56 bg-black/90 backdrop-blur-xl border-white/10 text-white shadow-2xl"
+                align="end"
+                forceMount
+            >
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{session.user.name}</p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-sm font-medium leading-none text-white">{session.user.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground truncate">
                             {session.user.email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+
+                <DropdownMenuSeparator className="bg-white/10" />
+
+                <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer group">
+                    <User className="w-4 h-4 mr-2 text-muted group-hover:text-primary transition-colors" />
+                    Profile
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer group">
+                    <Settings className="w-4 h-4 mr-2 text-muted group-hover:text-cyan-400 transition-colors" />
+                    Settings
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="bg-white/10" />
+
+                <DropdownMenuItem
+                    onClick={() => signOut()}
+                    className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer group"
+                >
+                    <LogOut className="w-4 h-4 mr-2 group-hover:text-red-500 transition-colors" />
                     Log out
                 </DropdownMenuItem>
             </DropdownMenuContent>
