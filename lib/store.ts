@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ACHIEVEMENTS, UserStats } from '@/lib/gamification/achievements';
 
-interface UserState {
+export interface UserState {
     level: number;
     vviqScore: number | null;
     dailyStreak: number;
@@ -41,6 +41,9 @@ interface UserState {
     // Daily Challenge
     completedChallenges: string[];
     completeChallenge: (id: string) => void;
+
+    // Hydration
+    hydrateFromDb: (data: Partial<UserState>) => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -187,6 +190,17 @@ export const useUserStore = create<UserState>()(
                 lastDiagnosticXP: 0,
                 showDiagnosticPrompt: false
             }),
+
+            hydrateFromDb: (data) => set((state) => ({
+                ...state,
+                ...data,
+                // Ensure neural profile is merged correctly if partial
+                neuralProfile: data.neuralProfile ? { ...state.neuralProfile, ...data.neuralProfile } : state.neuralProfile,
+                // Merge achievements
+                unlockedAchievements: data.unlockedAchievements ?
+                    Array.from(new Set([...state.unlockedAchievements, ...data.unlockedAchievements])) :
+                    state.unlockedAchievements
+            })),
         }),
         {
             name: 'monocle-storage',

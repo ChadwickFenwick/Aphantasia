@@ -7,6 +7,7 @@ import { useAudioSettings } from '@/hooks/useAudioSettings';
 import { cn } from '@/lib/utils';
 import { useUserStore } from '@/lib/store';
 import { usePathname } from 'next/navigation';
+import { UserProfile } from './auth/UserProfile';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -38,6 +39,10 @@ const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
                         <X className="w-6 h-6" />
                     </button>
                 )}
+            </div>
+
+            <div className="px-6 pb-2 pt-2">
+                <UserProfile />
             </div>
 
             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
