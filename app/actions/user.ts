@@ -17,7 +17,36 @@ export async function getUserData() {
         },
     });
 
-    return user;
+    if (!user) return null;
+
+    return {
+        level: user.level,
+        xp: user.xp,
+        dailyStreak: user.dailyStreak,
+        lastPracticeDate: user.lastPracticeDate ? user.lastPracticeDate.toISOString().split('T')[0] : null,
+        lastChallengeResetDate: user.lastChallengeResetDate ? user.lastChallengeResetDate.toISOString().split('T')[0] : null,
+
+        neuralProfile: user.neuralProfile ? {
+            visual: user.neuralProfile.visual,
+            auditory: user.neuralProfile.auditory,
+            somatic: user.neuralProfile.somatic,
+            cognitive: user.neuralProfile.cognitive,
+            focus: user.neuralProfile.focus
+        } : {
+            visual: 10, auditory: 10, somatic: 10, cognitive: 10, focus: 10
+        },
+
+        unlockedAchievements: user.achievements.map(a => a.achievementId),
+
+        // Gamification stats placeholders (as they are not yet fully in DB or mapped differently)
+        totalSessions: user.activityHistory.reduce((acc, log) => acc + log.count, 0),
+        activityHistory: {}, // We'll implement full history sync later specific to the chart format
+        lastDiagnosticXP: 0, // Not persisted in DB yet? schema missing?
+        completedChallenges: [], // Schema missing? 
+        showDiagnosticPrompt: false, // UI state
+
+        vviqScore: null // Not persisted?
+    };
 }
 
 export async function syncUserData(data: Partial<UserState>) {
