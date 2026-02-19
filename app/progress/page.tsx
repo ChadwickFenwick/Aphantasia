@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ProgressChart } from "@/components/ui/ProgressChart";
 import { useUserStore } from "@/lib/store";
-import { Flame, Star, Trophy, Activity, Lock, Unlock } from "lucide-react";
+import { Flame, Star, Trophy, Activity, Lock, Unlock, Eye, Ear, Hand } from "lucide-react";
 import { ActivityHeatmap } from "@/components/visuals/ActivityHeatmap";
 import { NeuralRadar } from "@/components/ui/NeuralRadar";
 import { ACHIEVEMENTS } from "@/lib/gamification/achievements";
@@ -20,7 +20,7 @@ const IconMap: Record<string, any> = {
 };
 
 export default function ProgressPage() {
-    const { level, dailyStreak, vviqScore, unlockedAchievements, xp } = useUserStore();
+    const { level, dailyStreak, neuralProfile, unlockedAchievements, xp } = useUserStore();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -32,8 +32,8 @@ export default function ProgressPage() {
     }
 
     // Mock history data for now
-    const chartData = vviqScore !== null ? [vviqScore] : [];
-    const chartLabels = vviqScore !== null ? ['Current'] : [];
+    // const chartData = vviqScore !== null ? [vviqScore] : [];
+    // const chartLabels = vviqScore !== null ? ['Current'] : [];
 
     return (
         <DashboardLayout>
@@ -45,6 +45,39 @@ export default function ProgressPage() {
 
                 {/* Top Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <GlassCard className="flex items-center gap-4 p-4 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="p-3 bg-blue-500/20 rounded-lg text-blue-400 relative">
+                            <Eye className="w-6 h-6" />
+                        </div>
+                        <div className="relative">
+                            <div className="text-2xl font-mono text-white font-bold">{neuralProfile.visual > 0 ? Math.round(neuralProfile.visual) : '-'}</div>
+                            <div className="text-xs text-muted uppercase tracking-widest">Visual</div>
+                        </div>
+                    </GlassCard>
+
+                    <GlassCard className="flex items-center gap-4 p-4 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="p-3 bg-purple-500/20 rounded-lg text-purple-400 relative">
+                            <Ear className="w-6 h-6" />
+                        </div>
+                        <div className="relative">
+                            <div className="text-2xl font-mono text-white font-bold">{neuralProfile.auditory > 0 ? Math.round(neuralProfile.auditory) : '-'}</div>
+                            <div className="text-xs text-muted uppercase tracking-widest">Auditory</div>
+                        </div>
+                    </GlassCard>
+
+                    <GlassCard className="flex items-center gap-4 p-4 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="p-3 bg-orange-500/20 rounded-lg text-orange-400 relative">
+                            <Hand className="w-6 h-6" />
+                        </div>
+                        <div className="relative">
+                            <div className="text-2xl font-mono text-white font-bold">{neuralProfile.somatic > 0 ? Math.round(neuralProfile.somatic) : '-'}</div>
+                            <div className="text-xs text-muted uppercase tracking-widest">Somatic</div>
+                        </div>
+                    </GlassCard>
+
                     <GlassCard className="flex items-center gap-4 p-4">
                         <div className="p-3 bg-primary/20 rounded-lg text-primary">
                             <Flame className="w-6 h-6" />
@@ -52,36 +85,6 @@ export default function ProgressPage() {
                         <div>
                             <div className="text-2xl font-mono text-white font-bold">{dailyStreak}</div>
                             <div className="text-xs text-muted uppercase tracking-widest">Day Streak</div>
-                        </div>
-                    </GlassCard>
-
-                    <GlassCard className="flex items-center gap-4 p-4">
-                        <div className="p-3 bg-secondary/20 rounded-lg text-secondary">
-                            <Star className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-mono text-white font-bold">{vviqScore ?? '-'} / 80</div>
-                            <div className="text-xs text-muted uppercase tracking-widest">VVIQ Score</div>
-                        </div>
-                    </GlassCard>
-
-                    <GlassCard className="flex items-center gap-4 p-4">
-                        <div className="p-3 bg-indigo-500/20 rounded-lg text-indigo-400">
-                            <Trophy className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-mono text-white font-bold">Lvl {level}</div>
-                            <div className="text-xs text-muted uppercase tracking-widest">Training Tier</div>
-                        </div>
-                    </GlassCard>
-
-                    <GlassCard className="flex items-center gap-4 p-4">
-                        <div className="p-3 bg-emerald-500/20 rounded-lg text-emerald-400">
-                            <Activity className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-mono text-white font-bold">{xp}</div>
-                            <div className="text-xs text-muted uppercase tracking-widest">Total XP</div>
                         </div>
                     </GlassCard>
                 </div>
@@ -99,7 +102,7 @@ export default function ProgressPage() {
                                 <NeuralRadar />
                             </GlassCard>
 
-                            {/* Chart -- Keep VVIQ History */}
+                            {/* Chart -- Keep VVIQ History
                             <GlassCard className="p-6 flex flex-col justify-center min-h-[400px]">
                                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                     <span className="text-cyan-400">📈</span> VVIQ History
@@ -110,7 +113,7 @@ export default function ProgressPage() {
                                         Complete Diagnostics to populate.
                                     </p>
                                 )}
-                            </GlassCard>
+                            </GlassCard> */}
                         </div>
                     </div>
 

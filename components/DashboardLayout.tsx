@@ -8,6 +8,9 @@ import { cn } from '@/lib/utils';
 import { useUserStore } from '@/lib/store';
 import { usePathname } from 'next/navigation';
 import { UserProfile } from './auth/UserProfile';
+import { useSession } from 'next-auth/react';
+import { getUserData } from '@/app/actions/user';
+import { useEffect } from 'react';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -24,8 +27,19 @@ const navItems = [
 
 const SidebarContent = ({ onClose }: { onClose?: () => void }) => {
     const { isEnabled, mode, volume, toggleAudio, setVolume, setMode } = useAudioSettings();
-    const { dailyStreak } = useUserStore();
+    const { dailyStreak, hydrateFromDb } = useUserStore();
     const pathname = usePathname();
+    const { data: session } = useSession();
+
+    useEffect(() => {
+        if (session?.user?.email) {
+            getUserData().then((data) => {
+                if (data) {
+                    hydrateFromDb(data);
+                }
+            });
+        }
+    }, [session, hydrateFromDb]);
 
     return (
         <div className="flex flex-col h-full">

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ACHIEVEMENTS, UserStats } from '@/lib/gamification/achievements';
+import { syncUserData } from '@/app/actions/user';
 
 export interface UserState {
     level: number;
@@ -37,6 +38,7 @@ export interface UserState {
         focus: number;     // Attention span/Consistency
     };
     updateNeuralProfile: (skills: ('visual' | 'auditory' | 'somatic' | 'cognitive' | 'focus')[], amount: number) => void;
+    setNeuralProfile: (profile: Partial<UserState['neuralProfile']>) => void;
 
     // Daily Challenge
     completedChallenges: string[];
@@ -44,6 +46,7 @@ export interface UserState {
 
     // Hydration
     hydrateFromDb: (data: Partial<UserState>) => void;
+    syncToDb: () => Promise<void>;
 }
 
 export const useUserStore = create<UserState>()(
@@ -78,6 +81,10 @@ export const useUserStore = create<UserState>()(
                 });
                 return { neuralProfile: newProfile };
             }),
+
+            setNeuralProfile: (profile) => set((state) => ({
+                neuralProfile: { ...state.neuralProfile, ...profile }
+            })),
 
             setVviqScore: (score) => set((state) => ({
                 vviqScore: score,
@@ -201,9 +208,76 @@ export const useUserStore = create<UserState>()(
                     Array.from(new Set([...state.unlockedAchievements, ...data.unlockedAchievements])) :
                     state.unlockedAchievements
             })),
-        }),
+            // Sync
+            syncToDb: async () => {
+                const state = get();
+                await syncUserData({
+                    level: state.level,
+                    xp: state.xp,
+                    dailyStreak: state.dailyStreak,
+                    lastPracticeDate: state.lastPracticeDate,
+                    lastChallengeResetDate: state.lastChallengeResetDate,
+                    neuralProfile: state.neuralProfile,
+                    unlockedAchievements: state.unlockedAchievements,
+                    activityHistory: state.activityHistory
+                });
+            }
+        }
+        ),
         {
             name: 'monocle-storage',
+            onRehydrateStorage: () => (state) => {
+                // Optional: Trigger sync on reload if needed, or just let components handle it
+            }
         }
     )
 );
+
+// Helper to trigger sync after state changes (debounce could be added here)
+const triggerSync = () => {
+    useUserStore.getState().syncToDb();
+};
+
+// Wrap actions to trigger sync
+const originalSetLevel = useUserStore.getState().setLevel;
+useUserStore.setState({
+    setLevel: (level) => {
+        originalSetLevel(level);
+        triggerSync();
+    }
+});
+
+const originalAddXP = useUserStore.getState().addXP;
+useUserStore.setState({
+    addXP: (amount) => {
+        originalAddXP(amount);
+        triggerSync();
+    }
+});
+
+const originalUpdateNeuralProfile = useUserStore.getState().updateNeuralProfile;
+useUserStore.setState({
+    updateNeuralProfile: (skills, amount) => {
+        originalUpdateNeuralProfile(skills, amount);
+        triggerSync();
+    }
+});
+
+const originalSetNeuralProfile = useUserStore.getState().setNeuralProfile;
+useUserStore.setState({
+    setNeuralProfile: (profile) => {
+        originalSetNeuralProfile(profile);
+        triggerSync();
+    }
+});
+
+const originalCheckAchievements = useUserStore.getState().checkAchievements;
+useUserStore.setState({
+    checkAchievements: () => {
+        const unlocked = originalCheckAchievements();
+        if (unlocked.length > 0) {
+            triggerSync();
+        }
+        return unlocked;
+    }
+});
