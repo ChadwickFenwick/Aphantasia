@@ -153,3 +153,19 @@ export async function syncUserData(data: Partial<UserState>) {
         return { success: false, error: 'Database error' };
     }
 }
+
+export async function updateUserProfile(data: { name: string }) {
+    const session = await auth();
+    if (!session?.user?.email) return { success: false, error: 'Not authenticated' };
+
+    try {
+        await prisma.user.update({
+            where: { email: session.user.email },
+            data: { name: data.name }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to update profile:', error);
+        return { success: false, error: 'Database error' };
+    }
+}

@@ -9,6 +9,7 @@ import { DailyChallenges } from "@/components/DailyChallenges";
 import { MonocleAvatar } from "@/components/visuals/MonocleAvatar";
 import { useEffect, useState } from "react";
 import { Flame, Star, Zap } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 const LEVEL_NAMES: Record<number, string> = {
   1: 'Aphantasia',
@@ -27,6 +28,7 @@ const LEVEL_EXERCISES: Record<number, { name: string; path: string }> = {
 };
 
 export default function Home() {
+  const { data: session } = useSession();
   const { level, dailyStreak } = useUserStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -57,8 +59,21 @@ export default function Home() {
               <Zap className="w-3 h-3" /> System Online
             </div>
             <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white leading-tight">
-              Welcome Back, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">Initiate.</span>
+              {session?.user ? (
+                <>
+                  Welcome Back, <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">
+                    {session.user.name?.split(' ')[0] || "Initiate"}.
+                  </span>
+                </>
+              ) : (
+                <>
+                  Welcome to <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">
+                    Monocle.
+                  </span>
+                </>
+              )}
             </h1>
             <p className="text-muted text-xl max-w-lg leading-relaxed">
               Your neuroplasticity training continues. The Monocle is evolving with your progress.
