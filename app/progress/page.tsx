@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ProgressChart } from "@/components/ui/ProgressChart";
 import { useUserStore } from "@/lib/store";
+import { NextMilestone } from "@/components/gamification/NextMilestone";
 import { Flame, Star, Trophy, Activity, Lock, Unlock, Eye, Ear, Hand } from "lucide-react";
 import { ActivityHeatmap } from "@/components/visuals/ActivityHeatmap";
 import { NeuralRadar } from "@/components/ui/NeuralRadar";
@@ -16,12 +17,14 @@ const IconMap: Record<string, any> = {
     'Clock': <Activity className="w-5 h-5" />,
     'Eye': <Star className="w-5 h-5" />,
     'Brain': <Trophy className="w-5 h-5" />,
-    'Star': <Star className="w-5 h-5" />
+    'Star': <Star className="w-5 h-5" />,
+    'Zap': <Flame className="w-5 h-5" />
 };
 
 export default function ProgressPage() {
     const { level, dailyStreak, neuralProfile, unlockedAchievements, xp } = useUserStore();
     const [mounted, setMounted] = useState(false);
+    const [showAllAchievements, setShowAllAchievements] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -102,18 +105,8 @@ export default function ProgressPage() {
                                 <NeuralRadar />
                             </GlassCard>
 
-                            {/* Chart -- Keep VVIQ History
-                            <GlassCard className="p-6 flex flex-col justify-center min-h-[400px]">
-                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                    <span className="text-cyan-400">📈</span> VVIQ History
-                                </h3>
-                                <ProgressChart data={chartData} labels={chartLabels} />
-                                {vviqScore === null && (
-                                    <p className="text-center text-muted mt-4 text-xs">
-                                        Complete Diagnostics to populate.
-                                    </p>
-                                )}
-                            </GlassCard> */}
+                            {/* Next Milestone Card */}
+                            <NextMilestone />
                         </div>
                     </div>
 
@@ -124,7 +117,7 @@ export default function ProgressPage() {
                                 <span className="text-yellow-400">🏆</span> Protocols
                             </h3>
                             <div className="space-y-4">
-                                {ACHIEVEMENTS.map(achievement => {
+                                {ACHIEVEMENTS.slice(0, showAllAchievements ? undefined : 5).map(achievement => {
                                     const isUnlocked = unlockedAchievements.includes(achievement.id);
                                     return (
                                         <div key={achievement.id} className={cn(
@@ -155,6 +148,15 @@ export default function ProgressPage() {
                                         </div>
                                     )
                                 })}
+
+                                {ACHIEVEMENTS.length > 5 && (
+                                    <button
+                                        onClick={() => setShowAllAchievements(!showAllAchievements)}
+                                        className="w-full py-2 text-xs text-center text-muted hover:text-white transition-colors border-t border-white/5 mt-4"
+                                    >
+                                        {showAllAchievements ? "Show Less" : `Show All (${ACHIEVEMENTS.length})`}
+                                    </button>
+                                )}
                             </div>
                         </GlassCard>
                     </div>

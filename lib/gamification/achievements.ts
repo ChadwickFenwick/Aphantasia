@@ -48,6 +48,15 @@ export const ACHIEVEMENTS: Achievement[] = [
         xpReward: 1000,
         rarity: 'legendary'
     },
+    {
+        id: 'chrononaut_4',
+        title: 'Eternal One',
+        description: 'Maintain a 100-day training streak.',
+        icon: 'Clock',
+        condition: (stats) => stats.dailyStreak >= 100,
+        xpReward: 5000,
+        rarity: 'void'
+    },
 
     // Level Achievements
     {
@@ -68,15 +77,116 @@ export const ACHIEVEMENTS: Achievement[] = [
         xpReward: 500,
         rarity: 'rare'
     },
+    {
+        id: 'clarity',
+        title: 'Crystal High definition',
+        description: 'Reach Level 4: Hyperphantasia.',
+        icon: 'Brain',
+        condition: (stats) => stats.level >= 4,
+        xpReward: 1000,
+        rarity: 'legendary'
+    },
+    {
+        id: 'prophantasia',
+        title: 'Reality Architect',
+        description: 'Reach Level 5: Prophantasia.',
+        icon: 'Zap',
+        condition: (stats) => stats.level >= 5,
+        xpReward: 5000,
+        rarity: 'void'
+    },
 
-    // Skill Achievements (Requires us to track specific stats better, starting simple)
+    // Session Milestones (Dedication)
     {
         id: 'initiate',
         title: 'Void Initiate',
-        description: 'Complete your first Daily Challenge set.',
+        description: 'Complete your first training session.',
         icon: 'Star',
-        condition: (stats) => stats.totalSessions >= 1, // We need to increment this
+        condition: (stats) => stats.totalSessions >= 1,
         xpReward: 50,
         rarity: 'common'
+    },
+    {
+        id: 'neophyte',
+        title: 'Dedicated Student',
+        description: 'Complete 10 training sessions.',
+        icon: 'Star',
+        condition: (stats) => stats.totalSessions >= 10,
+        xpReward: 150,
+        rarity: 'common'
+    },
+    {
+        id: 'adept',
+        title: 'Mind Builder',
+        description: 'Complete 50 training sessions.',
+        icon: 'Star',
+        condition: (stats) => stats.totalSessions >= 50,
+        xpReward: 500,
+        rarity: 'rare'
+    },
+    {
+        id: 'master',
+        title: 'Mental Architect',
+        description: 'Complete 100 training sessions.',
+        icon: 'Star',
+        condition: (stats) => stats.totalSessions >= 100,
+        xpReward: 1000,
+        rarity: 'legendary'
+    },
+    {
+        id: 'grandmaster',
+        title: 'Neuroplasticity God',
+        description: 'Complete 500 training sessions.',
+        icon: 'Star',
+        condition: (stats) => stats.totalSessions >= 500,
+        xpReward: 5000,
+        rarity: 'void'
+    },
+
+    // XP Milestones (Power)
+    {
+        id: 'spark',
+        title: 'First Spark',
+        description: 'Earn 1,000 Total XP.',
+        icon: 'Zap',
+        condition: (stats) => stats.xp >= 1000,
+        xpReward: 100,
+        rarity: 'common'
+    },
+    {
+        id: 'feedback_loop',
+        title: 'Feedback Loop',
+        description: 'Earn 5,000 Total XP.',
+        icon: 'Zap',
+        condition: (stats) => stats.xp >= 5000,
+        xpReward: 250,
+        rarity: 'common'
+    },
+    {
+        id: 'surge',
+        title: 'Neural Surge',
+        description: 'Earn 10,000 Total XP.',
+        icon: 'Zap',
+        condition: (stats) => stats.xp >= 10000,
+        xpReward: 500,
+        rarity: 'rare'
+    },
+    {
+        id: 'overload',
+        title: 'Synaptic Overload',
+        description: 'Earn 50,000 Total XP.',
+        icon: 'Zap',
+        condition: (stats) => stats.xp >= 50000,
+        xpReward: 2000,
+        rarity: 'legendary'
+    },
+    {
+        id: 'singularity',
+        title: 'The Singularity',
+        description: 'Earn 100,000 Total XP.',
+        icon: 'Zap',
+        condition: (stats) => stats.xp >= 100000,
+        xpReward: 10000,
+        rarity: 'void'
     }
 ];
